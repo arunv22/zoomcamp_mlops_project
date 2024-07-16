@@ -1,0 +1,85 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    global_data_product:
+      uuid: training_set1
+  downstream_blocks:
+  - hyperparameter_tuning/xgboost
+  - xgboost
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: training set1
+  retry_config: null
+  status: executed
+  timeout: null
+  type: global_data_product
+  upstream_blocks: []
+  uuid: training_set1
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - xgboost
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: Hyperparameter tuning/XGBoost
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - training_set1
+  uuid: hyperparameter_tuning/xgboost
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: XGBoost
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - training_set1
+  - hyperparameter_tuning/xgboost
+  uuid: xgboost
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2024-07-15 15:44:19.731987+00:00'
+data_integration: null
+description: 'XGBoost is a scalable and efficient implementation of gradient boosted
+  decision trees, a powerful ensemble ML '
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: XGBoost training
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags:
+- xgboost
+- decision tree
+type: python
+uuid: xgboost_training
+variables:
+  early_stopping_rounds: 10
+  max_depth: 10
+  max_evaluation: 10
+variables_dir: /home/src/mage_data/mlops
+widgets: []
