@@ -1,10 +1,11 @@
+fastparquet
+graphviz
+hyperopt
+jupyter
+mlflow==2.12.1
 pandas
-numpy
 scikit-learn
 seaborn
-mlflow
-notebook
-hyperopt
+shap
 xgboost
-mage-ai
-botocore
+pipenv
