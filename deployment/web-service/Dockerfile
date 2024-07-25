@@ -1,23 +1,17 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9.12-slim
+# Use the official Python image from the Docker Hub
+FROM python:3.9-slim
 
-# Upgrade pip and install pipenv
-RUN pip install -U pip pipenv
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy Pipfile and Pipfile.lock together
-COPY Pipfile Pipfile.lock ./
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install dependencies from Pipfile.lock
-RUN pipenv install --dev --deploy --ignore-pipfile
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the remaining files
-COPY predict.py test.py ./
-
-# Expose port 9696
+# Make port 9696 available to the world outside this container
 EXPOSE 9696
 
-# Use gunicorn to serve the application
-CMD ["pipenv", "run", "gunicorn", "--bind", "0.0.0.0:9696", "predict:app"]
+# Run predict.py when the container launches
+CMD ["python", "predict.py"]
