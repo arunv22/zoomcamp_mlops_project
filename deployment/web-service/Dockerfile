@@ -1,18 +1,20 @@
+# Use an official Python runtime as a parent image
 FROM python:3.9.12-slim
 
-# Upgrade pip and install pipenv in a single RUN command
+# Upgrade pip and install pipenv
 RUN pip install -U pip pipenv
 
+# Set the working directory
 WORKDIR /app
 
 # Copy Pipfile and Pipfile.lock together
 COPY Pipfile Pipfile.lock ./
 
 # Install dependencies from Pipfile.lock
-RUN pipenv install --dev --deploy
+RUN pipenv install --dev --deploy --ignore-pipfile
 
 # Copy the remaining files
-COPY predict.py lin_reg.bin ./
+COPY predict.py test.py ./
 
 # Expose port 9696
 EXPOSE 9696

@@ -8,6 +8,8 @@ from io import BytesIO
 # Define the GitHub URL for the raw model file
 GITHUB_RAW_URL = "https://raw.githubusercontent.com/arunv22/zoomcamp_mlops_project/main/model.pkl"
 
+RUN_ID = 'ec53532a97e74b2eb5c4a1eeb6834be2'
+
 # Fetch the model file from GitHub and load it into memory
 response = requests.get(GITHUB_RAW_URL)
 if response.status_code == 200:
@@ -34,7 +36,7 @@ def predict_endpoint():
 
     result = {
         'MEDV': pred,
-        'model_version': 'latest'  # You can update this if needed
+        'model_version': RUN_ID  # You can update this if needed
     }
 
     return jsonify(result)
