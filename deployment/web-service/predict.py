@@ -1,3 +1,4 @@
+import os
 import requests
 import pickle
 import pandas as pd
@@ -41,6 +42,12 @@ def predict_endpoint():
 
     return jsonify(result)
 
+@app.route('/')
+def home():
+    return "Welcome to the house price prediction service. Use POST /predict to get predictions."
+
+
 if __name__ == "__main__":
     from waitress import serve
-    serve(app, host='0.0.0.0', port=9696)
+    port = int(os.environ.get('PORT', 9696))
+    serve(app, host='0.0.0.0', port=port)
