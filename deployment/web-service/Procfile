@@ -1,1 +1,4 @@
+# The Procfile defines the process types and the commands to run when the application starts.
+# In this case, we are defining a single process type 'web' which uses gunicorn to serve the Flask app.
+
 web: gunicorn predict:app

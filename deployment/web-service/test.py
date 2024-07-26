@@ -13,7 +13,10 @@ test_row = {
 }
 
 # Send a POST request to the prediction endpoint
-response = requests.post('https://house-price-prediction-service-7ca39ab862fd.herokuapp.com/predict', json=test_row)
+response = requests.post('http://127.0.0.1:9696/predict', json=test_row)
+
+# Send a POST request to the prediction endpoint
+# response = requests.post('https://house-price-prediction-service-7ca39ab862fd.herokuapp.com/predict', json=test_row)
 result = response.json()
 
 print(result)
