@@ -8,3 +8,8 @@ shap
 pipenv
 pyarrow
 pytest
+flake8
+black
+pylint
+pre-commit
+make

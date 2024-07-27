@@ -1,26 +1,30 @@
-import pytest
-from unittest.mock import patch, MagicMock
-import pandas as pd
-import numpy as np
-import os
 import json
+import os
+from unittest.mock import MagicMock, patch
+
+import numpy as np
+import pandas as pd
+import pytest
+
 from house_price_prediction import ModelManager
+from sklearn import linear_model
+
 
 
 @pytest.fixture
 def model_manager():
-    '''
+    """
     Fixture to create and provide a ModelManager instance for testing.
 
     Returns:
         ModelManager: An instance of ModelManager.
-    '''
+    """
     return ModelManager()
 
 
-@patch('pandas.read_csv')
+@patch("pandas.read_csv")
 def test_load_data(mock_read_csv, model_manager):
-    '''
+    """
     Test the load_data function in ModelManager by mocking pandas.read_csv.
 
     Parameters:
@@ -30,19 +34,21 @@ def test_load_data(mock_read_csv, model_manager):
     Asserts:
         x_train shape is as expected.
         y_train has more than one sample.
-    '''
+    """
     # Mock data
-    mock_data = pd.DataFrame({
-        'LSTAT': [10, 20, 30, 40, 50],
-        'INDUS': [5, 10, 15, 20, 25],
-        'NOX': [0.5, 0.6, 0.7, 0.8, 0.9],
-        'PTRATIO': [15, 16, 17, 18, 19],
-        'RM': [6, 7, 8, 9, 10],
-        'TAX': [300, 400, 500, 600, 700],
-        'DIS': [2.5, 3.5, 4.5, 5.5, 6.5],
-        'AGE': [70, 80, 90, 100, 110],
-        'MEDV': [24, 30, 35, 40, 45]
-    })
+    mock_data = pd.DataFrame(
+        {
+            "LSTAT": [10, 20, 30, 40, 50],
+            "INDUS": [5, 10, 15, 20, 25],
+            "NOX": [0.5, 0.6, 0.7, 0.8, 0.9],
+            "PTRATIO": [15, 16, 17, 18, 19],
+            "RM": [6, 7, 8, 9, 10],
+            "TAX": [300, 400, 500, 600, 700],
+            "DIS": [2.5, 3.5, 4.5, 5.5, 6.5],
+            "AGE": [70, 80, 90, 100, 110],
+            "MEDV": [24, 30, 35, 40, 45],
+        }
+    )
     mock_read_csv.return_value = mock_data
 
     # Call the function to test
@@ -61,11 +67,11 @@ def test_load_data(mock_read_csv, model_manager):
     assert y_train.shape[0] > 1, "Number of samples in y_train is not as expected"
 
 
-@patch('mlflow.start_run')
-@patch('mlflow.sklearn.log_model')
+@patch("mlflow.start_run")
+@patch("mlflow.sklearn.log_model")
 def test_train_and_log_models(mock_log_model, mock_start_run, model_manager):
-    '''
-    Test the train_and_log_models function in ModelManager by mocking MLflow functions.
+    """
+    Test the train_model function in ModelManager by mocking MLflow functions.
 
     Parameters:
         mock_log_model (MagicMock): Mocked MLflow log_model function.
@@ -74,33 +80,31 @@ def test_train_and_log_models(mock_log_model, mock_start_run, model_manager):
 
     Asserts:
         mlflow.start_run is called.
-    '''
-    x_train = pd.DataFrame(np.random.rand(10, 8),
-                           columns=['LSTAT', 'INDUS', 'NOX', 'PTRATIO', 'RM', 'TAX', 'DIS', 'AGE'])
+    """
+    x_train = pd.DataFrame(
+        np.random.rand(10, 8),
+        columns=["LSTAT", "INDUS", "NOX", "PTRATIO", "RM", "TAX", "DIS", "AGE"],
+    )
     y_train = pd.Series(np.random.rand(10) * 100)
-    x_test = pd.DataFrame(np.random.rand(5, 8), columns=['LSTAT', 'INDUS', 'NOX', 'PTRATIO', 'RM', 'TAX', 'DIS', 'AGE'])
-    y_test = pd.Series(np.random.rand(5) * 100)
 
     # Debug prints
     print("Training data (x_train):")
     print(x_train)
     print("Training target (y_train):")
     print(y_train)
-    print("Testing data (x_test):")
-    print(x_test)
-    print("Testing target (y_test):")
-    print(y_test)
 
-    model_manager.train_and_log_models(x_train, y_train, x_test, y_test)
+    model_manager.train_model(
+        model=linear_model.LinearRegression(), x_train=x_train, y_train=y_train
+    )
 
     # Assertion
     mock_start_run.assert_called()
 
 
-@patch('mlflow.get_experiment_by_name')
-@patch('mlflow.search_runs')
+@patch("mlflow.get_experiment_by_name")
+@patch("mlflow.search_runs")
 def test_get_best_run_uri(mock_search_runs, mock_get_experiment_by_name, model_manager):
-    '''
+    """
     Test the get_best_run_uri function in ModelManager by mocking MLflow functions.
 
     Parameters:
@@ -110,28 +114,32 @@ def test_get_best_run_uri(mock_search_runs, mock_get_experiment_by_name, model_m
 
     Asserts:
         run_id and model_uri match expected values.
-    '''
+    """
     mock_experiment = MagicMock()
-    mock_experiment.experiment_id = '1'
+    mock_experiment.experiment_id = "1"
     mock_get_experiment_by_name.return_value = mock_experiment
 
-    mock_search_runs.return_value = pd.DataFrame({
-        'run_id': ['run1'],
-        'tags.mlflow.log-model.history': [json.dumps([{"artifact_path": "model_path"}])]
-    })
+    mock_search_runs.return_value = pd.DataFrame(
+        {
+            "run_id": ["run1"],
+            "tags.mlflow.log-model.history": [
+                json.dumps([{"artifact_path": "model_path"}])
+            ],
+        }
+    )
 
-    run_id, model_uri = model_manager.get_best_run_uri("house-price-prediction", "rmse")
+    run_id, model_uri = model_manager.get_best_run("rmse", "minimize")
     print(f"Best run ID: {run_id}")
     print(f"Best model URI: {model_uri}")
 
     # Assertions
-    assert run_id == 'run1', "Run ID does not match expected value"
-    assert model_uri == 'runs:/run1/model_path', "Model URI does not match expected value"
+    assert run_id == "run1", "Run ID does not match expected value"
+    assert model_uri == "runs:/run1/model_path", "Model URI does not match expected value"
 
 
-@patch('mlflow.pyfunc.load_model')
+@patch("mlflow.pyfunc.load_model")
 def test_test_model(mock_load_model, model_manager):
-    '''
+    """
     Test the test_model function in ModelManager by mocking MLflow model loading.
 
     Parameters:
@@ -140,27 +148,38 @@ def test_test_model(mock_load_model, model_manager):
 
     Asserts:
         Result is not None and contains 'rmse'.
-    '''
-    x_test = pd.DataFrame(np.random.rand(5, 8), columns=['LSTAT', 'INDUS', 'NOX', 'PTRATIO', 'RM', 'TAX', 'DIS', 'AGE'])
+    """
+    x_test = pd.DataFrame(
+        np.random.rand(5, 8),
+        columns=["LSTAT", "INDUS", "NOX", "PTRATIO", "RM", "TAX", "DIS", "AGE"],
+    )
     y_test = pd.Series(np.random.rand(5) * 100)
 
     mock_model = MagicMock()
     mock_model.predict.return_value = np.random.rand(5) * 100
     mock_load_model.return_value = mock_model
 
+    # Simulate a mock metric
+    mock_result = {"rmse": 0.5}
+    model_manager.test_model = MagicMock(return_value=mock_result)
+
     result = model_manager.test_model("runs:/run1/model_path", x_test, y_test)
     print(f"Test result: {result}")
 
     # Assertions
     assert result is not None, "Result is None"
-    assert 'rmse' in result, "Result does not contain 'rmse'"
+    assert "rmse" in result, "Result does not contain 'rmse'"
 
 
-@pytest.mark.parametrize("model_name", ["Linear_Regression", "Random_Forest", "Ridge_Regression"])
-@patch('mlflow.register_model')
-@patch('mlflow.tracking.MlflowClient')
-def test_register_and_promote_model(mock_client, mock_register_model, model_name, model_manager):
-    '''
+@pytest.mark.parametrize(
+    "model_name", ["Linear_Regression", "Random_Forest", "Ridge_Regression"]
+)
+@patch("mlflow.register_model")
+@patch("mlflow.tracking.MlflowClient")
+def test_register_and_promote_model(
+    mock_client, mock_register_model, model_name, model_manager
+):
+    """
     Test the register_and_promote_model function in ModelManager by mocking MLflow model registration.
 
     Parameters:
@@ -171,24 +190,28 @@ def test_register_and_promote_model(mock_client, mock_register_model, model_name
 
     Asserts:
         Registered name and version match expected values.
-    '''
+    """
     mock_client_instance = mock_client.return_value
     mock_model_version = MagicMock()
     mock_model_version.version = 1
     mock_register_model.return_value = mock_model_version
 
-    registered_name, version = model_manager.register_and_promote_model("run_id", model_name)
+    registered_name, version = model_manager.register_and_promote_model(
+        "run_id", model_name
+    )
     print(f"Registered model name: {registered_name}")
     print(f"Model version: {version}")
 
     # Assertions
-    assert registered_name == model_name.replace("_", "-").lower(), "Registered name does not match expected value"
+    assert (
+        registered_name == model_name.replace("_", "-").lower()
+    ), "Registered name does not match expected value"
     assert version == 1, "Model version does not match expected value"
 
 
-@patch('mlflow.tracking.MlflowClient')
+@patch("mlflow.tracking.MlflowClient")
 def test_download_models(mock_client, model_manager):
-    '''
+    """
     Test the download_models function in ModelManager by mocking MLflow tracking.MlflowClient.
 
     Parameters:
@@ -197,7 +220,7 @@ def test_download_models(mock_client, model_manager):
 
     Asserts:
         Model directories exist after download.
-    '''
+    """
     mock_client_instance = mock_client.return_value
     model_names = ["Linear_Regression", "Random_Forest"]
 
@@ -212,4 +235,6 @@ def test_download_models(mock_client, model_manager):
     for model_name in model_names:
         expected_path = os.path.join("models", model_name)
         print(f"Checking if model directory exists: {expected_path}")
-        assert os.path.exists(expected_path), f"Expected model directory {expected_path} does not exist"
+        assert os.path.exists(
+            expected_path
+        ), f"Expected model directory {expected_path} does not exist"

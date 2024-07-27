@@ -1,19 +1,26 @@
+"""
+This module contains the Flask application for house price prediction.
+"""
+
 import os
-import requests
 import pickle
-import pandas as pd
-import numpy as np
-from flask import Flask, request, jsonify
 from io import BytesIO
 
+import numpy as np
+import pandas as pd
+import requests
+from flask import Flask, jsonify, request
+
 # Define the GitHub URL for the raw model file
-GITHUB_RAW_URL = "https://raw.githubusercontent.com/arunv22/zoomcamp_mlops_project/main/model.pkl"
+GITHUB_RAW_URL = (
+    "https://raw.githubusercontent.com/arunv22/zoomcamp_mlops_project/main/model.pkl"
+)
 
 # Define the run ID for versioning (you can update this if needed)
-RUN_ID = 'ec53532a97e74b2eb5c4a1eeb6834be2'
+RUN_ID = "ec53532a97e74b2eb5c4a1eeb6834be2"
 
 # Fetch the model file from GitHub and load it into memory
-response = requests.get(GITHUB_RAW_URL)
+response = requests.get(GITHUB_RAW_URL, timeout=10)
 if response.status_code == 200:
     model_file = BytesIO(response.content)
     model = pickle.load(model_file)
@@ -40,10 +47,10 @@ def predict(features):
 
 
 # Initialize the Flask app
-app = Flask('house-price-prediction')
+app = Flask("house-price-prediction")
 
 
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=["POST"])
 def predict_endpoint():
     """
     API endpoint to get house price predictions.
@@ -56,15 +63,12 @@ def predict_endpoint():
     features = request.get_json()
     pred = predict(features)
 
-    result = {
-        'MEDV': pred,
-        'model_version': RUN_ID  # You can update this if needed
-    }
+    result = {"MEDV": pred, "model_version": RUN_ID}  # You can update this if needed
 
     return jsonify(result)
 
 
-@app.route('/')
+@app.route("/")
 def home():
     """
     Home route to provide information about the service.
@@ -78,5 +82,7 @@ def home():
 if __name__ == "__main__":
     from waitress import serve
 
-    port = int(os.environ.get('PORT', 9696))  # Get the port from the environment variable or use 9696 as default
-    serve(app, host='0.0.0.0', port=port)  # Start the server using waitress
+    port = int(
+        os.environ.get("PORT", 9696)
+    )  # Get the port from the environment variable or use 9696 as default
+    serve(app, host="0.0.0.0", port=port)  # Start the server using waitress
