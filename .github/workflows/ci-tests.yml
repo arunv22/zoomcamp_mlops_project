@@ -1,0 +1,61 @@
+name: CI Tests
+
+on:
+  push:
+    branches:
+      - main
+      - '**/feature/*'
+    paths:
+      - 'deployment/web-service/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'deployment/web-service/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start Docker services
+        run: |
+          cd mlops-mage
+          chmod +x scripts/start.sh
+          ./scripts/start.sh
+        timeout-minutes: 5
+
+      - name: Run unit tests
+        run: |
+          source venv/bin/activate
+          pytest -v --tb=short
+
+      - name: Run integration tests
+        run: |
+          source venv/bin/activate
+          pytest -m integration -v --tb=short
+
+      - name: Stop Docker services
+        run: |
+          cd mlops-mage
+          docker-compose down
