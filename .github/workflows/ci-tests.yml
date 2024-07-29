@@ -1,3 +1,11 @@
+#This workflow ensures that on every push or pull request to the main branch, specifically affecting the deployment/web-service/** directory, the following actions are performed:
+
+#The code is checked out.
+#Python 3.9 is set up.
+#Dependencies are installed in a virtual environment.
+#Unit tests are executed using pytest.
+#This setup helps in maintaining code quality by running automated tests on specified triggers, ensuring that changes do not break the existing functionality.
+
 name: CI Tests
 
 on:

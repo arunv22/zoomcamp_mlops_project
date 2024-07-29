@@ -1,6 +1,25 @@
+
 """
-This module contains the ModelManager class, which is used for managing machine learning
-models using MLflow for house price prediction.
+This module contains the `ModelManager` class, which is used for managing machine learning models for house price prediction using MLflow. The `ModelManager` class provides functionalities to:
+
+- **Initialize and manage MLflow experiments:** Set up and ensure the active status of experiments.
+- **Load and preprocess data:** Load dataset from a URL and split it into training and testing sets.
+- **Create and train models:** Create preprocessing and model training pipelines, train models, and log the training runs with MLflow.
+- **Evaluate and test models:** Find the best run based on specified metrics, load models from MLflow, and evaluate them on test data.
+- **Register, promote, and download models:** Register trained models in MLflow, promote them to specific stages (e.g., Production), and download models locally.
+
+Key features of the `ModelManager` class include:
+
+- **load_data:** Load and split the housing dataset.
+- **create_pipeline:** Create a data preprocessing and model training pipeline.
+- **train_model:** Train a model and log the training run with MLflow.
+- **get_best_run:** Retrieve the best run based on a specified metric.
+- **test_model:** Test a loaded model and compute the RMSE.
+- **register_and_promote_model:** Register and promote a model to a specified stage.
+- **download_models:** Download models from MLflow to a local directory.
+
+This module is designed to streamline the process of managing machine learning models, from data loading and preprocessing to model training, evaluation, and deployment.
+
 """
 
 import json

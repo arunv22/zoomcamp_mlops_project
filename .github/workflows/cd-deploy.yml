@@ -1,3 +1,16 @@
+#The provided CD configuration workflow ensures that on every push or pull request to the main branch, specifically affecting the deployment/web-service/** directory, the following actions are performed:
+
+#The code is checked out.
+#Python 3.9 is set up.
+#Docker Compose is installed.
+#Dependencies are installed in a virtual environment.
+#Docker services are started.
+#Unit tests are executed using pytest.
+#Integration tests are executed using pytest.
+#Docker services are stopped.
+#This setup helps in automating the deployment process, ensuring that the application is tested thoroughly before being deployed.
+
+
 name: CD Deploy
 
 on:

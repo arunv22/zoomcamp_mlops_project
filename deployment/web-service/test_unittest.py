@@ -1,3 +1,40 @@
+'''
+
+This unit test suite contains various unit tests for the `ModelManager` class used in the house price prediction project. The `ModelManager` class, as described, provides functionalities to manage machine learning models with MLflow. This test suite ensures the correct behavior of these functionalities using the `pytest` framework and mocks.
+
+### Tests Included:
+
+- **Fixture Setup:**
+  - `model_manager`: A fixture to create and provide a `ModelManager` instance for testing.
+
+- **Data Loading:**
+  - `test_load_data`: Tests the `load_data` function by mocking `pandas.read_csv` to ensure data is loaded and split correctly.
+
+- **Model Training and Logging:**
+  - `test_train_and_log_models`: Tests the `train_model` function by mocking MLflow's `start_run` and `log_model` functions to ensure model training and logging occur as expected.
+
+- **Best Run Retrieval:**
+  - `test_get_best_run_uri`: Tests the `get_best_run` function by mocking MLflow functions to verify the correct retrieval of the best run based on specified metrics.
+
+- **Model Testing:**
+  - `test_test_model`: Tests the `test_model` function by mocking MLflow's `load_model` function to validate model evaluation and RMSE computation.
+
+- **Model Registration and Promotion:**
+  - `test_register_and_promote_model`: Tests the `register_and_promote_model` function by mocking MLflow's model registration functions to ensure models are correctly registered and promoted.
+
+- **Model Download:**
+  - `test_download_models`: Tests the `download_models` function by mocking MLflow's `MlflowClient` to verify that models are downloaded to the local directory correctly.
+
+### Key Features of the Test Suite:
+
+- **Mocking and Patching:** Utilizes `unittest.mock` for mocking external dependencies such as MLflow and pandas, ensuring isolated and independent tests.
+- **Assertions and Validations:** Contains various assertions to validate the expected behavior of each function within the `ModelManager` class.
+- **Parameterized Tests:** Uses `pytest.mark.parametrize` to test the model registration and promotion function with different model names.
+
+This test suite ensures the robustness and reliability of the `ModelManager` class, facilitating effective model management and deployment.
+
+'''
+
 import json
 import os
 from unittest.mock import MagicMock, patch

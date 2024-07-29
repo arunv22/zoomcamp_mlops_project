@@ -1,5 +1,63 @@
 """
-This module contains integration tests for the house price prediction service.
+## Integration Tests for House Price Prediction Service
+
+This module contains integration tests for the house price prediction service, ensuring the end-to-end functionality of the service, from data loading to model training and prediction.
+
+### Overview
+
+- **Module Purpose:** To validate the integration of different components in the house price prediction service.
+- **Frameworks Used:** `pytest` for testing, `requests` for HTTP requests, and `flask` for the web service.
+- **Key Components Tested:**
+  - Data loading and splitting.
+  - Model training and logging.
+  - Model prediction via a REST API endpoint.
+
+### Code Components
+
+- **Global Constants:**
+  - `COLUMN_NAMES`: Names of columns in the dataset.
+  - `PREDICT_COLUMNS`: Feature columns used for prediction.
+  - `TARGET_COLUMN`: Target column (`MEDV`).
+  - `GITHUB_RAW_URL`: URL to fetch the pre-trained model.
+  - `RUN_ID`: Identifier for the model run.
+
+- **Functions:**
+  - `load_data(url)`: Loads and splits the dataset into training and testing sets.
+  - `predict(features)`: Predicts target values using the pre-trained model.
+  - `predict_endpoint()`: Flask route handling POST requests for predictions.
+  - `home()`: Flask route providing basic information about the service.
+  - `run_app()`: Runs the Flask app using the Waitress server.
+
+### Fixtures
+
+- **setup_environment():** Sets up environment variables and configurations.
+- **start_server():** Starts the Flask server in a separate thread before tests run, and stops the server after tests are done.
+
+### Tests
+
+- **test_integration_train_log_and_predict():** Integration test to verify the end-to-end functionality of the service:
+  1. Loads the dataset.
+  2. Trains and logs the model.
+  3. Tests the prediction endpoint by sending a sample request and validating the response.
+
+### Notes
+
+- **Dependencies:**
+  - `pytest` for running tests.
+  - `requests` for HTTP requests.
+  - `flask` for creating the web service.
+  - `waitress` for serving the Flask app.
+  - `numpy`, `pandas`, `sklearn` for data manipulation and machine learning.
+
+- **Model Loading:**
+  - The pre-trained model is fetched from a GitHub URL and loaded into memory for predictions.
+
+- **Endpoints:**
+  - `/predict`: Handles POST requests to predict house prices.
+  - `/`: Provides basic information about the service.
+
+This module ensures that the house price prediction service functions correctly, integrating data loading, model training, logging, and serving predictions via an API.
+
 """
 
 import os
