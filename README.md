@@ -1,5 +1,3 @@
-## END TO END MLOPS PROJECT - deployment/web-service/house_price_prediction.py
-
 Dataset Description
 The dataset used in this project is the Boston Housing Dataset from the UCI Machine Learning Repository. The data was collected in 1978 and contains information on 506 housing entries from various suburbs in Boston. Each entry includes 14 features that describe different aspects of the suburbs.
 
